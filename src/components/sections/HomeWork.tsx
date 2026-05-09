@@ -1,66 +1,97 @@
+'use client'
+
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
+import { useRef } from 'react'
 import { work } from '@/data/work'
-import { Reveal, RevealStagger, RevealItem } from '@/components/shared/Reveal'
 
 export function HomeWork() {
-  const featured = work.slice(0, 3)
+  const sectionRef = useRef<HTMLElement>(null)
 
   return (
-    <section className="relative overflow-hidden border-t border-foreground/10 bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-32 md:py-44">
-        <Reveal className="mb-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">
-          <span className="text-warm-orange">/02</span>
-          <span className="h-px flex-1 max-w-[80px] bg-foreground/20" />
-          <span>darbai</span>
-        </Reveal>
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden noise"
+      style={{ background: 'var(--color-electric)', color: 'var(--color-cream)' }}
+    >
+      {/* Watermark */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-[5%] -left-[5%] z-0 select-none font-display italic font-light leading-none text-cream/[0.07]"
+        style={{ fontSize: 'clamp(15rem, 45vw, 50rem)' }}
+      >
+        03
+      </div>
 
-        <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
-          <Reveal>
-            <h2 className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-light leading-[1.02] tracking-[-0.02em]">
-              Ką <span className="italic text-warm-orange">dirbu</span>{' '}
-              dabar.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <Link
-              href="/work"
-              className="group inline-flex items-center gap-2 rounded-full border border-foreground/20 px-5 py-2 font-mono text-sm transition-colors hover:border-warm-orange hover:text-warm-orange"
-            >
-              Visi
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-          </Reveal>
+      <div className="relative z-10 mx-auto max-w-[110rem] px-6 py-32 md:px-10 md:py-44">
+        <div className="mb-16 flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-cream/70">
+          <div className="flex items-center gap-3">
+            <span className="text-canary">[03]</span>
+            <span>module/work</span>
+          </div>
+          <Link
+            href="/work"
+            className="hidden items-center gap-2 text-cream hover:text-canary md:inline-flex"
+          >
+            ↘ all positions
+          </Link>
         </div>
 
-        <RevealStagger className="divide-y divide-foreground/10 border-y border-foreground/10">
-          {featured.map((w) => (
-            <RevealItem key={w.slug}>
+        <h2
+          className="font-display font-light leading-[0.86] tracking-[-0.04em]"
+          style={{ fontSize: 'clamp(3rem, 14vw, 16rem)' }}
+        >
+          <span className="block">things</span>
+          <span className="block italic font-normal text-canary">
+            i build / now
+          </span>
+        </h2>
+
+        {/* Work listings as a giant numbered table */}
+        <ul className="mt-20 border-t-2 border-cream/30">
+          {work.map((w, i) => (
+            <li key={w.slug} className="border-b-2 border-cream/30">
               <Link
                 href={`/work/${w.slug}`}
-                className="group grid grid-cols-1 items-baseline gap-4 py-8 transition-colors hover:bg-foreground/[0.02] md:grid-cols-[1fr_2fr_auto] md:gap-8"
+                className="group grid grid-cols-[auto_1fr_auto] items-baseline gap-4 py-8 transition-colors hover:bg-cream hover:text-navy md:grid-cols-[auto_1fr_2fr_auto] md:gap-8 md:py-12"
               >
-                <div className="flex items-baseline gap-3">
-                  <h3 className="font-display text-3xl font-light tracking-tight md:text-4xl">
+                <span className="font-mono text-xs text-cream/50 group-hover:text-navy/60 md:text-sm">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+
+                <div className="flex flex-col gap-1">
+                  <span className="font-display text-3xl font-light leading-none tracking-tight md:text-6xl">
                     {w.company}
-                  </h3>
-                  {w.current && (
-                    <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-term-green" />
-                  )}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/60 group-hover:text-navy/60">
+                    {w.role}
+                  </span>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground/60 md:text-base">
-                  {w.role}
-                  <span className="mx-3 text-foreground/30">·</span>
+
+                <p className="hidden text-sm leading-relaxed text-cream/70 group-hover:text-navy/70 md:block md:text-base">
                   {w.summary}
                 </p>
-                <div className="flex items-center gap-3 font-mono text-xs text-foreground/40">
-                  {w.period}
-                  <ArrowUpRight className="h-4 w-4 text-foreground/30 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-warm-orange" />
+
+                <div className="flex shrink-0 flex-col items-end gap-1 font-mono text-[10px] uppercase tracking-[0.2em]">
+                  {w.current && (
+                    <span className="border border-canary bg-canary px-2 py-0.5 text-navy">
+                      ● live
+                    </span>
+                  )}
+                  <span className="text-cream/60 group-hover:text-navy/60">
+                    {w.period}
+                  </span>
                 </div>
               </Link>
-            </RevealItem>
+            </li>
           ))}
-        </RevealStagger>
+        </ul>
+
+        <Link
+          href="/work"
+          className="mt-12 inline-flex items-center gap-3 border-2 border-cream bg-cream px-6 py-3 font-mono text-sm uppercase tracking-[0.2em] text-navy transition-colors hover:border-canary hover:bg-canary md:hidden"
+        >
+          all positions →
+        </Link>
       </div>
     </section>
   )

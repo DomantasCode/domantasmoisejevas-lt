@@ -22,10 +22,13 @@ export function Footer() {
   const links = SITE.social.filter((s) => s.url.length > 0)
 
   return (
-    <footer className="border-t border-foreground/10 px-6 py-10">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm text-foreground/60 md:flex-row">
-        <div className="font-mono">
-          © {new Date().getFullYear()} {SITE.name} · {SITE.location}
+    <footer
+      className="relative overflow-hidden border-t-2 border-cream/10"
+      style={{ background: 'var(--color-navy)', color: 'var(--color-cream)' }}
+    >
+      <div className="mx-auto flex max-w-[110rem] flex-col items-baseline justify-between gap-4 px-6 py-8 md:flex-row md:items-center md:px-10">
+        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-cream/50">
+          © {new Date().getFullYear()} ─ {SITE.name} ─ {SITE.location}
         </div>
         <div className="flex items-center gap-4">
           {links.map((link) => (
@@ -36,7 +39,7 @@ export function Footer() {
               rel="noopener noreferrer"
               aria-label={link.label}
               title={link.label}
-              className="opacity-60 transition-opacity hover:opacity-100"
+              className="text-cream/55 transition-colors hover:text-canary"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -50,7 +53,7 @@ export function Footer() {
           ))}
           <a
             href={`mailto:${SITE.email}`}
-            className="font-mono text-xs opacity-60 hover:opacity-100"
+            className="font-mono text-[10px] uppercase tracking-[0.3em] text-cream/65 hover:text-mint"
           >
             {SITE.email}
           </a>

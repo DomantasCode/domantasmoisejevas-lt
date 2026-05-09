@@ -4,31 +4,29 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { SITE } from '@/lib/constants'
-import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 const NAV = [
-  { href: '/about', label: 'Apie' },
-  { href: '/work', label: 'Darbai' },
-  { href: '/travels', label: 'Kelionės' },
-  { href: '/hobbies', label: 'Hobiai' },
-  { href: '/chat', label: 'Chat' },
-  { href: '/contact', label: 'Kontaktai' },
+  { href: '/about', label: 'about', idx: '02' },
+  { href: '/work', label: 'work', idx: '03' },
+  { href: '/travels', label: 'atlas', idx: '04' },
+  { href: '/hobbies', label: 'play', idx: '05' },
+  { href: '/contact', label: 'contact', idx: '06' },
 ] as const
 
 export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+      <div className="mx-auto flex max-w-[110rem] items-center justify-between px-6 py-5 md:px-10">
         <Link
           href="/"
-          className="font-mono text-sm tracking-tight text-foreground hover:opacity-70"
+          className="pointer-events-auto group flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.3em] mix-blend-difference text-cream hover:text-mint"
         >
-          {SITE.shortName}
+          <span className="text-mint">●</span>
+          <span>{SITE.shortName}/.lt</span>
         </Link>
-        <nav className="flex items-center gap-6 font-mono text-sm">
-          <div className="hidden items-center gap-6 md:flex">
+        <nav className="pointer-events-auto hidden items-center gap-1 md:flex">
           {NAV.map((item) => {
             const active = pathname.startsWith(item.href)
             return (
@@ -36,17 +34,23 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'transition-opacity hover:opacity-100',
-                  active ? 'opacity-100' : 'opacity-50'
+                  'group flex items-center gap-2 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] mix-blend-difference transition-colors',
+                  active ? 'text-mint' : 'text-cream/70 hover:text-cream'
                 )}
               >
-                {item.label}
+                <span className="opacity-50">[{item.idx}]</span>
+                <span>{item.label}</span>
               </Link>
             )
           })}
-          </div>
-          <ThemeToggle />
         </nav>
+        {/* Mobile: simple menu link to /contact */}
+        <Link
+          href="/contact"
+          className="pointer-events-auto font-mono text-[11px] uppercase tracking-[0.25em] mix-blend-difference text-cream md:hidden"
+        >
+          menu
+        </Link>
       </div>
     </header>
   )

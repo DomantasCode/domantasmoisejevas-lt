@@ -1,7 +1,12 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import { Instrument_Serif, Fraunces, Bricolage_Grotesque } from 'next/font/google'
+import {
+  Instrument_Serif,
+  Fraunces,
+  Bricolage_Grotesque,
+  IBM_Plex_Mono,
+} from 'next/font/google'
 
 const instrumentSerif = Instrument_Serif({
   weight: '400',
@@ -21,6 +26,13 @@ const fraunces = Fraunces({
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-grotesque',
+  display: 'swap',
+})
+
+const plexMono = IBM_Plex_Mono({
+  weight: ['300', '400', '500', '600'],
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-plex-mono',
   display: 'swap',
 })
 import { Analytics } from '@vercel/analytics/next'
@@ -64,7 +76,7 @@ export default function RootLayout({
     <html
       lang="lt"
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable} ${fraunces.variable} ${bricolage.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable} ${fraunces.variable} ${bricolage.variable} ${plexMono.variable}`}
     >
       <body className="bg-background text-foreground antialiased">
         <ThemeProvider>

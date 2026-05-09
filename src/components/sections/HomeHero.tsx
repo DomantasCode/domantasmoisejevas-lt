@@ -1,26 +1,74 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { MeshGradientClient } from '@/components/sections/MeshGradientClient'
 
 const ROLES = [
-  { word: 'Software', accent: 'Engineer' },
-  { word: 'AI', accent: 'Specialist' },
-  { word: 'Wake-park', accent: 'Rider' },
-  { word: 'World', accent: 'Wanderer' },
+  { label: 'software/engineer', accent: '#4fc683' },
+  { label: 'ai/architect', accent: '#7b4dff' },
+  { label: 'wakepark/rider', accent: '#ff8040' },
+  { label: 'world/wanderer', accent: '#fdbd03' },
 ]
 
 export function HomeHero() {
-  const ref = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start start', 'end start'],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-
+  const sectionRef = useRef<HTMLElement>(null)
   const [roleIdx, setRoleIdx] = useState(0)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const lines = sectionRef.current?.querySelectorAll('.line-wrap')
+      if (lines) {
+        gsap.fromTo(
+          lines,
+          { yPercent: 110, rotate: 4 },
+          {
+            yPercent: 0,
+            rotate: 0,
+            duration: 1.6,
+            ease: 'expo.out',
+            stagger: 0.14,
+          }
+        )
+      }
+      gsap.fromTo(
+        '.hero-fade',
+        { opacity: 0, y: 18 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.0,
+          stagger: 0.08,
+          ease: 'power3.out',
+          delay: 0.55,
+        }
+      )
+      gsap.fromTo(
+        '.sticker',
+        { opacity: 0, scale: 0.8, rotate: 0 },
+        {
+          opacity: 1,
+          scale: 1,
+          rotate: (i: number) => [-12, 8, -6, 14, -10][i] ?? 0,
+          duration: 0.8,
+          ease: 'back.out(1.6)',
+          delay: 1.1,
+          stagger: 0.07,
+        }
+      )
+      gsap.to('.bracket', {
+        rotate: '+=10',
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        stagger: 0.4,
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   useEffect(() => {
     const t = setInterval(
       () => setRoleIdx((i) => (i + 1) % ROLES.length),
@@ -31,92 +79,138 @@ export function HomeHero() {
 
   return (
     <section
-      ref={ref}
-      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden"
+      ref={sectionRef}
+      className="relative isolate min-h-[100svh] overflow-hidden"
+      style={{ background: '#040224' }}
     >
-      {/* Animated grid */}
+      {/* Animated WebGL mesh gradient */}
+      <MeshGradientClient />
+
+      {/* Top-corner meta grid */}
+      <div className="hero-fade pointer-events-none absolute inset-x-0 top-24 z-10 flex items-baseline justify-between px-6 font-mono text-[10px] uppercase tracking-[0.25em] text-cream/55 md:px-10">
+        <div className="flex items-center gap-3">
+          <span className="text-mint">[01]</span>
+          <span>module/hero</span>
+        </div>
+        <div className="hidden items-center gap-3 md:flex">
+          <span className="text-canary">●</span>
+          <span>n44.41° / e8.93°</span>
+          <span className="text-cream/30">|</span>
+          <span>genoa, italy</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span>{new Date().getFullYear()}</span>
+          <span className="text-tangerine">→</span>
+        </div>
+      </div>
+
+      {/* Massive [ ] brackets framing the title */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.18]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgb(var(--foreground) / 0.4) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--foreground) / 0.4) 1px, transparent 1px)',
-          backgroundSize: '64px 64px',
-          maskImage:
-            'radial-gradient(ellipse at center, black 28%, transparent 78%)',
-          WebkitMaskImage:
-            'radial-gradient(ellipse at center, black 28%, transparent 78%)',
-          animation: 'grid-drift 24s linear infinite',
-        }}
-      />
-
-      {/* Color blooms */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(ellipse 50% 35% at 50% 60%, rgb(96 165 250 / 0.18), transparent 70%),
-            radial-gradient(ellipse 30% 30% at 80% 20%, rgb(251 146 60 / 0.12), transparent 70%),
-            radial-gradient(ellipse 30% 25% at 15% 75%, rgb(244 114 88 / 0.10), transparent 70%)
-          `,
-        }}
-      />
-
-      <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 px-6 text-center"
+        className="bracket pointer-events-none absolute left-2 top-1/2 z-[2] -translate-y-1/2 select-none font-display font-light leading-none text-mint/60 md:left-6"
+        style={{ fontSize: 'clamp(8rem, 28vw, 28rem)' }}
       >
-        {/* Status chip */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-10 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/5 px-3 py-1 font-mono text-[11px] text-foreground/70 backdrop-blur"
+        [
+      </div>
+      <div
+        aria-hidden
+        className="bracket pointer-events-none absolute right-2 top-1/2 z-[2] -translate-y-1/2 select-none font-display font-light leading-none text-electric/60 md:right-6"
+        style={{ fontSize: 'clamp(8rem, 28vw, 28rem)' }}
+      >
+        ]
+      </div>
+
+      {/* Watermark section index (huge) */}
+      <div
+        aria-hidden
+        className="hero-fade pointer-events-none absolute bottom-[6%] right-[3%] z-[1] select-none font-display italic font-light leading-none text-cream/[0.06]"
+        style={{ fontSize: 'clamp(10rem, 35vw, 36rem)' }}
+      >
+        01
+      </div>
+
+      {/* TITLE — center stage */}
+      <div className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 text-center">
+        <h1
+          className="font-display font-light leading-[0.82] tracking-[-0.04em] text-cream"
+          style={{ fontSize: 'clamp(3.2rem, 17vw, 16rem)' }}
         >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-term-green opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-term-green" />
+          <span className="block overflow-hidden">
+            <span className="line-wrap inline-block uppercase">DOMANTAS</span>
           </span>
-          available · Genoa, Italy · 2026
-        </motion.div>
+          <span className="block overflow-hidden">
+            <span className="line-wrap inline-block italic font-normal lowercase text-canary">
+              moisejevas
+            </span>
+          </span>
+        </h1>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-[clamp(3rem,11vw,11rem)] font-light leading-[0.92] tracking-[-0.02em]"
-        >
-          Domantas
-          <br />
-          <span className="italic text-shine">Moisejevas</span>
-        </motion.h1>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="mt-8 flex items-center justify-center gap-3 font-mono text-sm text-foreground/60 md:text-base"
-        >
-          <span className="text-term-green">$</span>
-          <span className="text-foreground/40">whoami</span>
-          <span className="text-foreground/20">→</span>
-          <motion.span
+        <div className="hero-fade mt-12 flex flex-wrap items-center justify-center gap-3 font-mono text-sm text-cream/70 md:text-base">
+          <span className="text-mint">$</span>
+          <span className="text-cream/40">whoami</span>
+          <span className="text-cream/20">→</span>
+          <span
             key={roleIdx}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-term-cyan"
+            className="inline-block rounded-none border px-3 py-1.5"
+            style={{
+              borderColor: ROLES[roleIdx].accent,
+              color: ROLES[roleIdx].accent,
+              background: `${ROLES[roleIdx].accent}14`,
+              transition: 'all 0.5s ease',
+            }}
           >
-            {ROLES[roleIdx].word}{' '}
-            <span className="text-warm-orange">{ROLES[roleIdx].accent}</span>
-          </motion.span>
-        </motion.div>
-      </motion.div>
+            {ROLES[roleIdx].label}
+          </span>
+        </div>
+      </div>
 
-      {/* Bottom corner cluster */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
-        scroll ↓
+      {/* STICKER STACK — rotated badges around the edges */}
+      <div className="sticker pointer-events-none absolute left-6 top-[18%] z-[3] hidden flex-col items-start gap-1 font-mono text-[10px] uppercase tracking-[0.2em] md:flex">
+        <span
+          className="border border-canary bg-canary px-2 py-0.5 text-navy"
+          style={{ rotate: '-12deg' }}
+        >
+          v0.1 · wip
+        </span>
+      </div>
+      <div className="sticker pointer-events-none absolute right-8 top-[22%] z-[3] hidden md:block">
+        <div
+          className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-mint bg-navy text-center font-mono text-[9px] uppercase tracking-[0.2em] text-mint"
+          style={{ rotate: '8deg' }}
+        >
+          since
+          <br />
+          MMIII
+        </div>
+      </div>
+      <div className="sticker pointer-events-none absolute bottom-[18%] left-12 z-[3] hidden md:block">
+        <span
+          className="border border-tangerine bg-tangerine/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-tangerine"
+          style={{ rotate: '-6deg' }}
+        >
+          ↘ portfolio
+        </span>
+      </div>
+      <div className="sticker pointer-events-none absolute bottom-[24%] right-16 z-[3] hidden md:block">
+        <span
+          className="border border-electric bg-electric/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-electric"
+          style={{ rotate: '14deg' }}
+        >
+          AI architect
+        </span>
+      </div>
+      <div className="sticker pointer-events-none absolute bottom-[10%] left-1/3 z-[3] hidden md:block">
+        <span
+          className="border border-cream/30 bg-cream/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-cream/70"
+          style={{ rotate: '-10deg' }}
+        >
+          erasmus+ unige
+        </span>
+      </div>
+
+      {/* Footer scroll cue */}
+      <div className="hero-fade absolute bottom-6 left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.4em] text-cream/40">
+        scroll ↓ keep going
       </div>
     </section>
   )

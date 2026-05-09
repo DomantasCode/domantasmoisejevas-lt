@@ -1,77 +1,108 @@
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
 import { hobbies } from '@/data/hobbies'
-import { Reveal, RevealStagger, RevealItem } from '@/components/shared/Reveal'
 
-const COLORS: Record<string, string> = {
-  Sportas: 'bg-warm-orange/10 text-warm-orange border-warm-orange/30',
-  Muzika: 'bg-warm-rose/10 text-warm-rose border-warm-rose/30',
-  Kūryba: 'bg-warm-teal/10 text-warm-teal border-warm-teal/30',
-  Mokymasis: 'bg-warm-amber/10 text-warm-amber border-warm-amber/30',
-  Kita: 'bg-foreground/5 text-foreground/60 border-foreground/20',
+const ACCENT: Record<string, string> = {
+  Sportas: 'var(--color-tangerine)',
+  Muzika: 'var(--color-electric)',
+  Kūryba: 'var(--color-cobalt)',
+  Mokymasis: 'var(--color-mint)',
+  Kita: 'var(--color-navy)',
 }
 
 export function HomeHobbies() {
   return (
-    <section className="relative overflow-hidden border-t border-foreground/10 bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-32 md:py-44">
-        <Reveal className="mb-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/50">
-          <span className="text-warm-orange">/04</span>
-          <span className="h-px flex-1 max-w-[80px] bg-foreground/20" />
-          <span>hobiai</span>
-        </Reveal>
+    <section
+      className="relative overflow-hidden noise"
+      style={{ background: 'var(--color-canary)', color: 'var(--color-navy)' }}
+    >
+      {/* Watermark */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-[5%] -left-[4%] z-0 select-none font-display italic font-light leading-none text-navy/[0.07]"
+        style={{ fontSize: 'clamp(15rem, 45vw, 50rem)' }}
+      >
+        05
+      </div>
 
-        <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
-          <Reveal>
-            <h2 className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-light leading-[1.02] tracking-[-0.02em]">
-              Kai{' '}
-              <span className="italic text-warm-orange">nedirbu</span>.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <Link
-              href="/hobbies"
-              className="group inline-flex items-center gap-2 rounded-full border border-foreground/20 px-5 py-2 font-mono text-sm transition-colors hover:border-warm-orange hover:text-warm-orange"
-            >
-              Visi hobiai
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-          </Reveal>
+      <div className="relative z-10 mx-auto max-w-[110rem] px-6 py-32 md:px-10 md:py-44">
+        <div className="mb-16 flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-navy/65">
+          <div className="flex items-center gap-3">
+            <span className="text-tangerine">[05]</span>
+            <span>module/hobbies</span>
+          </div>
+          <Link
+            href="/hobbies"
+            className="hidden items-center gap-2 text-navy hover:text-cream md:inline-flex"
+          >
+            ↘ all hobbies
+          </Link>
         </div>
 
-        <RevealStagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {hobbies.map((h, idx) => (
-            <RevealItem key={h.slug}>
+        <h2
+          className="font-display font-light leading-[0.84] tracking-[-0.04em]"
+          style={{ fontSize: 'clamp(3rem, 13vw, 14rem)' }}
+        >
+          <span className="block">when</span>
+          <span className="block italic font-normal text-tangerine">
+            i&apos;m / not coding
+          </span>
+        </h2>
+
+        {/* Sticker-stack hobby cards */}
+        <div className="relative mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {hobbies.map((h, idx) => {
+            const accent = ACCENT[h.category] ?? ACCENT.Kita
+            const rotate = [-3, 2, -1.5][idx] ?? 0
+            return (
               <Link
+                key={h.slug}
                 href={`/hobbies/${h.slug}`}
-                className="group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-foreground/10 bg-card p-7 transition-all hover:-translate-y-1 hover:border-warm-orange/40 hover:shadow-2xl hover:shadow-warm-orange/10"
+                className="group relative flex h-full flex-col gap-5 border-2 border-navy bg-cream p-6 transition-transform hover:-translate-y-2 md:p-8"
                 style={{
-                  transform: `rotate(${idx % 2 === 0 ? '-0.4deg' : '0.4deg'})`,
+                  rotate: `${rotate}deg`,
+                  boxShadow: '8px 8px 0 0 var(--color-navy)',
                 }}
               >
-                <div className="flex items-start justify-between gap-3">
+                {/* Big number */}
+                <div className="flex items-baseline justify-between">
                   <span
-                    className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${COLORS[h.category] ?? COLORS.Kita}`}
+                    className="font-display text-5xl font-light leading-none tracking-tight md:text-6xl"
+                    style={{ color: accent }}
+                  >
+                    0{idx + 1}
+                  </span>
+                  <span
+                    className="border-2 border-navy bg-cream px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.2em]"
+                    style={{ color: accent }}
                   >
                     {h.category}
                   </span>
-                  <ArrowUpRight className="h-4 w-4 text-foreground/30 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
-                <h3 className="font-display text-3xl font-light tracking-tight md:text-4xl">
+
+                <h3 className="font-display text-3xl font-normal leading-[1.05] tracking-tight md:text-4xl">
                   {h.title}
                 </h3>
+
                 {h.since && (
-                  <p className="font-mono text-[11px] text-foreground/50">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-navy/55">
                     {h.since}
                   </p>
                 )}
-                <p className="text-sm leading-relaxed text-foreground/70">
+
+                <p className="text-sm leading-relaxed text-navy/70 md:text-base">
                   {h.summary}
                 </p>
+
+                <span className="mt-auto inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-navy">
+                  read{' '}
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
               </Link>
-            </RevealItem>
-          ))}
-        </RevealStagger>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
