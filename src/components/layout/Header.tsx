@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { SITE } from '@/lib/constants'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 const NAV = [
   { href: '/about', label: 'Apie' },
@@ -26,6 +27,7 @@ export function Header() {
           {SITE.shortName}
         </Link>
         <nav className="flex items-center gap-6 font-mono text-sm">
+          <div className="hidden items-center gap-6 md:flex">
           {NAV.map((item) => {
             const active = pathname.startsWith(item.href)
             return (
@@ -41,6 +43,8 @@ export function Header() {
               </Link>
             )
           })}
+          </div>
+          <ThemeToggle />
         </nav>
       </div>
     </header>

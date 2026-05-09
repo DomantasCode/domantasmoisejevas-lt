@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import { ThemeProvider } from 'next-themes'
 import { Analytics } from '@vercel/analytics/next'
 import { SITE } from '@/lib/constants'
+import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { LenisProvider } from '@/components/shared/LenisProvider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -42,15 +43,12 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body className="bg-background text-foreground antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <Header />
-          {children}
-          <Footer />
+        <ThemeProvider>
+          <LenisProvider>
+            <Header />
+            {children}
+            <Footer />
+          </LenisProvider>
         </ThemeProvider>
         <Analytics />
       </body>
