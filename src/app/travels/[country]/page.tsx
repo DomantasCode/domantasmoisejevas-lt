@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { countries } from '@/data/countries'
+import { PhotoGallery } from '@/components/shared/PhotoGallery'
 
 export function generateStaticParams() {
   return countries.map((c) => ({ country: c.code.toLowerCase() }))
@@ -52,10 +53,21 @@ export default async function TravelCountryPage({
         <p className="font-mono text-sm text-foreground/60">{item.name}</p>
       </div>
 
-      <p className="mt-10 text-base leading-relaxed text-foreground/70">
-        {/* TODO: pridėti kelionių istoriją, nuotraukas, žemėlapį */}
-        Šios šalies istorija dar bus papildyta.
-      </p>
+      {item.notes && item.notes.length > 0 && (
+        <div className="mt-10 space-y-4 text-base leading-relaxed text-foreground/80 md:text-lg">
+          {item.notes.map((n, i) => (
+            <p key={i}>{n}</p>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-12">
+        <PhotoGallery
+          images={item.images}
+          alt={item.nameLt}
+          emptyHint={`Įmesk nuotraukas į /public/photos/travels/${item.code.toLowerCase()}/ ir pridėk path į src/data/countries.ts → ${item.code} → images[]`}
+        />
+      </div>
     </main>
   )
 }
