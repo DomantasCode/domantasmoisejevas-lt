@@ -9,10 +9,13 @@ export interface SocialLink {
 export const SITE = {
   name: 'Domantas Moisejevas',
   shortName: 'Domantas',
-  description: 'Programinės įrangos inžinierius ir AI specialistas',
+  headline: 'AI & Software Development',
+  description:
+    'AI Growth & Innovation Architect. Kuriu ateities sprendimus pasitelkdamas technologijas ir kūrybinę viziją.',
   url: 'https://domantasmoisejevas.lt',
   email: 'domantas@moisejevas.lt',
-  location: 'Genoa, Italy',
+  location: 'Genoa, Italy', // Erasmus+ — base Vilnius
+  baseLocation: 'Vilnius, Lithuania',
   social: [
     {
       type: 'github',

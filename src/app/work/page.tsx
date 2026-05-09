@@ -33,13 +33,20 @@ export default function WorkPage() {
                 className="group flex flex-col gap-1 py-5 transition-colors hover:bg-foreground/5"
               >
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-lg font-medium">{item.company}</span>
-                  <span className="font-mono text-xs text-foreground/50">
+                  <span className="flex items-center gap-2 text-lg font-medium">
+                    {item.company}
+                    {item.current && (
+                      <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent">
+                        dabar
+                      </span>
+                    )}
+                  </span>
+                  <span className="shrink-0 font-mono text-xs text-foreground/50">
                     {item.period}
                   </span>
                 </div>
                 <span className="text-sm text-foreground/70">
-                  {item.role} · {item.location}
+                  {item.role} · {item.location} · {item.type}
                 </span>
               </Link>
             </li>

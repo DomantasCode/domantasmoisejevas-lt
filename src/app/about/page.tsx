@@ -4,7 +4,7 @@ import { SITE } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Apie',
-  description: `${SITE.name} — apie mane, ką dirbu ir kur esu.`,
+  description: `${SITE.name} — apie mane.`,
 }
 
 export default function AboutPage() {
@@ -18,27 +18,25 @@ export default function AboutPage() {
           <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
             {SITE.name}
           </h1>
-          <p className="font-mono text-sm text-foreground/60">
-            Software Engineer · AI Specialist
-          </p>
+          <p className="font-mono text-sm text-foreground/60">{SITE.headline}</p>
         </div>
 
         <div className="space-y-5 text-base leading-relaxed text-foreground/80 md:text-lg">
           <p>
-            Esu programinės įrangos inžinierius, dirbantis su web ir AI
-            sistemomis. Mane domina ta vieta, kur susikerta produktų
-            inžinerija, dizainas ir didieji kalbos modeliai.
+            Kuriu ateities sprendimus pasitelkdamas technologijas ir kūrybinę
+            viziją, vedinas misijos keisti pasaulį į gera. 🗺️
           </p>
           <p>
-            Šiuo metu gyvenu ir dirbu iš {SITE.location}. Keliauju kiek galiu —
-            iki šiol aplankiau virš 20 šalių, ir kiekviena jų vienaip ar kitaip
-            paveikė tai, kaip galvoju apie produktus, žmones ir laiką.
+            Dirbu sunkiau nei dauguma, nes esu susitelkęs į kūrimą to nuostabaus
+            gyvenimo, kurį noriu nugyventi. 🚀
           </p>
           <p>
-            Šis tinklalapis — vieta, kur renku savo darbus, projektus, keliones
-            ir mintis. Dalis jo veikia kaip{' '}
-            <span className="font-mono text-foreground">AI Domantas</span> —
-            pokalbių botas, kuris atsako už mane, kai manęs nėra.
+            Šiuo metu esu Erasmus+ mainuose <em>University of Genoa</em> ir
+            studijuoju AI bei Computer Science. Pagrindinė bazė — VILNIUS TECH,
+            kur baigiu Computer Software Engineering bakalaurą. Dirbu su VMI
+            kaip <span className="font-mono text-foreground">AI Growth &amp; Innovation Architect</span>{' '}
+            ir vienasmenėje agentūroje{' '}
+            <span className="font-mono text-foreground">MozeTech</span>.
           </p>
         </div>
 

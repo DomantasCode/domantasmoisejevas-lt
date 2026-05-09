@@ -43,17 +43,39 @@ export default async function WorkSlugPage({
 
       <div className="mt-8 space-y-3">
         <p className="font-mono text-xs uppercase tracking-widest text-foreground/50">
-          {item.period} · {item.location}
+          {item.period} · {item.type} · {item.arrangement}
         </p>
         <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
           {item.company}
         </h1>
-        <p className="font-mono text-sm text-foreground/70">{item.role}</p>
+        <p className="font-mono text-sm text-foreground/70">
+          {item.role} · {item.location}
+        </p>
       </div>
 
       <p className="mt-10 text-base leading-relaxed text-foreground/80 md:text-lg">
         {item.summary}
       </p>
+
+      <ul className="mt-8 space-y-2 text-sm text-foreground/80">
+        {item.highlights.map((h, i) => (
+          <li key={i} className="flex gap-3">
+            <span className="mt-2 inline-block h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
+            <span>{h}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-8 flex flex-wrap gap-2">
+        {item.skills.map((s) => (
+          <span
+            key={s}
+            className="rounded-md border border-foreground/10 bg-foreground/5 px-2 py-1 font-mono text-xs text-foreground/70"
+          >
+            {s}
+          </span>
+        ))}
+      </div>
     </main>
   )
 }
