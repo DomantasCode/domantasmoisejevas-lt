@@ -10,6 +10,7 @@ const NAV = [
   { href: '/about', label: 'Apie' },
   { href: '/work', label: 'Darbai' },
   { href: '/travels', label: 'Kelionės' },
+  { href: '/hobbies', label: 'Hobiai' },
   { href: '/chat', label: 'Chat' },
   { href: '/contact', label: 'Kontaktai' },
 ] as const

@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { LenisProvider } from '@/components/shared/LenisProvider'
+import { AutoTheme } from '@/components/shared/AutoTheme'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground antialiased">
         <ThemeProvider>
+          <AutoTheme />
           <LenisProvider>
             <Header />
             {children}
