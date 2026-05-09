@@ -1,175 +1,200 @@
 'use client'
 
-import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import createGlobe, { type COBEOptions } from 'cobe'
 import { useRouter } from 'next/navigation'
-import { useMemo, useRef, useState } from 'react'
-import * as THREE from 'three'
-import { countries, type Country } from '@/data/countries'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { countries } from '@/data/countries'
 
-const RADIUS = 2
+const VISITED = countries.filter((c) => c.visited)
 
-function latLngToVec3(lat: number, lng: number, r: number) {
-  const phi = (90 - lat) * (Math.PI / 180)
-  const theta = (lng + 180) * (Math.PI / 180)
-  return new THREE.Vector3(
-    -r * Math.sin(phi) * Math.cos(theta),
-    r * Math.cos(phi),
-    r * Math.sin(phi) * Math.sin(theta)
-  )
-}
+const MARKERS = VISITED.map((c) => ({
+  location: [c.lat, c.lng] as [number, number],
+  size: c.current ? 0.12 : 0.07,
+}))
 
-function Pin({
-  country,
-  onClick,
-  onHover,
-}: {
-  country: Country
-  onClick: () => void
-  onHover: (label: string | null) => void
-}) {
-  const [hovered, setHovered] = useState(false)
-  const position = useMemo(
-    () => latLngToVec3(country.lat, country.lng, RADIUS * 1.005),
-    [country.lat, country.lng]
-  )
-  const baseColor = country.current ? '#fb923c' : '#60a5fa'
-  const hoverColor = '#facc15'
-
-  return (
-    <group position={position}>
-      <mesh>
-        <sphereGeometry args={[hovered ? 0.16 : 0.1, 16, 16]} />
-        <meshBasicMaterial
-          color={hovered ? hoverColor : baseColor}
-          transparent
-          opacity={0.18}
-          depthWrite={false}
-        />
-      </mesh>
-      <mesh
-        onPointerOver={(e) => {
-          e.stopPropagation()
-          setHovered(true)
-          onHover(country.nameLt)
-          document.body.style.cursor = 'pointer'
-        }}
-        onPointerOut={() => {
-          setHovered(false)
-          onHover(null)
-          document.body.style.cursor = 'auto'
-        }}
-        onClick={(e) => {
-          e.stopPropagation()
-          onClick()
-        }}
-      >
-        <sphereGeometry args={[hovered ? 0.07 : 0.05, 16, 16]} />
-        <meshBasicMaterial color={hovered ? hoverColor : baseColor} />
-      </mesh>
-    </group>
-  )
-}
-
-function Atmosphere() {
-  return (
-    <mesh scale={1.18}>
-      <sphereGeometry args={[RADIUS, 48, 48]} />
-      <meshBasicMaterial
-        color="#3b82f6"
-        transparent
-        opacity={0.06}
-        side={THREE.BackSide}
-        depthWrite={false}
-      />
-    </mesh>
-  )
-}
-
-function GlobeBody({
-  onHover,
-}: {
-  onHover: (label: string | null) => void
-}) {
-  const groupRef = useRef<THREE.Group>(null!)
-  const router = useRouter()
-
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.06
-    }
-  })
-
-  const visited = useMemo(() => countries.filter((c) => c.visited), [])
-
-  return (
-    <group ref={groupRef} rotation={[0.4, 0, 0]}>
-      <mesh>
-        <sphereGeometry args={[RADIUS, 64, 64]} />
-        <meshStandardMaterial color="#0a0a0a" roughness={1} metalness={0} />
-      </mesh>
-
-      <mesh>
-        <sphereGeometry args={[RADIUS * 1.001, 48, 24]} />
-        <meshBasicMaterial
-          color="#3b82f6"
-          wireframe
-          transparent
-          opacity={0.18}
-          depthWrite={false}
-        />
-      </mesh>
-
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[RADIUS * 1.002, 0.003, 8, 96]} />
-        <meshBasicMaterial color="#22d3ee" transparent opacity={0.4} />
-      </mesh>
-
-      {visited.map((c) => (
-        <Pin
-          key={c.code}
-          country={c}
-          onClick={() => router.push(`/travels/${c.code.toLowerCase()}`)}
-          onHover={onHover}
-        />
-      ))}
-    </group>
-  )
-}
+const THETA = 0.32
+const BASE_OPTS = {
+  devicePixelRatio: 2,
+  phi: 0,
+  theta: THETA,
+  dark: 1,
+  diffuse: 1.2,
+  mapSamples: 16000,
+  mapBrightness: 6,
+  baseColor: [0.18, 0.22, 0.32] as [number, number, number],
+  markerColor: [0.99, 0.6, 0.2] as [number, number, number],
+  glowColor: [0.6, 0.75, 1] as [number, number, number],
+} satisfies Partial<COBEOptions>
 
 export function Globe() {
-  const [label, setLabel] = useState<string | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pointerInteracting = useRef<number | null>(null)
+  const pointerMovement = useRef(0)
+  const phiRef = useRef(0)
+  const widthRef = useRef(0)
+  const router = useRouter()
+  const [hovered, setHovered] = useState<string | null>(null)
+
+  const onResize = useCallback(() => {
+    if (canvasRef.current) {
+      widthRef.current = canvasRef.current.offsetWidth
+    }
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('resize', onResize)
+    onResize()
+
+    const w = widthRef.current * 2
+    const globe = createGlobe(canvasRef.current!, {
+      ...BASE_OPTS,
+      width: w,
+      height: w,
+      markers: MARKERS,
+    })
+
+    let frame = 0
+    const loop = () => {
+      if (pointerInteracting.current === null) {
+        phiRef.current += 0.0035
+      }
+      const newW = widthRef.current * 2
+      globe.update({
+        phi: phiRef.current + pointerMovement.current,
+        theta: THETA,
+        width: newW,
+        height: newW,
+      })
+      frame = requestAnimationFrame(loop)
+    }
+    frame = requestAnimationFrame(loop)
+
+    setTimeout(() => {
+      if (canvasRef.current) canvasRef.current.style.opacity = '1'
+    }, 50)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      globe.destroy()
+      window.removeEventListener('resize', onResize)
+    }
+  }, [onResize])
+
+  function findNearestCountry(clientX: number, clientY: number) {
+    const canvas = canvasRef.current
+    if (!canvas) return null
+    const rect = canvas.getBoundingClientRect()
+    const cx = (clientX - rect.left) / rect.width - 0.5
+    const cy = (clientY - rect.top) / rect.height - 0.5
+
+    const r = Math.sqrt(cx * cx + cy * cy) * 2
+    if (r > 0.95) return null
+
+    const x = cx * 2
+    const y = -cy * 2
+    const z2 = 1 - x * x - y * y
+    if (z2 < 0) return null
+    const z = Math.sqrt(z2)
+
+    const phi = phiRef.current + pointerMovement.current
+
+    const yt = y * Math.cos(-THETA) - z * Math.sin(-THETA)
+    const zt = y * Math.sin(-THETA) + z * Math.cos(-THETA)
+
+    const xs = x * Math.cos(-phi) + zt * Math.sin(-phi)
+    const zs = -x * Math.sin(-phi) + zt * Math.cos(-phi)
+
+    const lat = Math.asin(yt) * (180 / Math.PI)
+    const lng = Math.atan2(xs, zs) * (180 / Math.PI)
+
+    let best: (typeof VISITED)[number] | null = null
+    let bestD = 8
+    for (const c of VISITED) {
+      const dLat = c.lat - lat
+      const dLng = ((c.lng - lng + 540) % 360) - 180
+      const d = Math.sqrt(dLat * dLat + dLng * dLng)
+      if (d < bestD) {
+        bestD = d
+        best = c
+      }
+    }
+    return best
+  }
 
   return (
-    <div className="relative aspect-square w-full max-w-[540px]">
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 42 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
-      >
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[5, 4, 5]} intensity={0.9} />
-        <Atmosphere />
-        <GlobeBody onHover={setLabel} />
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          rotateSpeed={0.6}
-          enableDamping
-          dampingFactor={0.08}
-        />
-      </Canvas>
+    <div
+      className="relative aspect-square w-full max-w-[600px]"
+      style={{ contain: 'layout paint size' }}
+    >
+      <canvas
+        ref={canvasRef}
+        onPointerDown={(e) => {
+          pointerInteracting.current =
+            e.clientX - pointerMovement.current * 100
+          if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing'
+        }}
+        onPointerUp={(e) => {
+          if (pointerInteracting.current !== null) {
+            const moved = Math.abs(
+              e.clientX -
+                (pointerInteracting.current + pointerMovement.current * 100)
+            )
+            if (moved < 5) {
+              const country = findNearestCountry(e.clientX, e.clientY)
+              if (country) {
+                router.push(`/travels/${country.code.toLowerCase()}`)
+              }
+            }
+          }
+          pointerInteracting.current = null
+          if (canvasRef.current) canvasRef.current.style.cursor = 'grab'
+        }}
+        onPointerOut={() => {
+          pointerInteracting.current = null
+          if (canvasRef.current) canvasRef.current.style.cursor = 'grab'
+          setHovered(null)
+        }}
+        onMouseMove={(e) => {
+          if (pointerInteracting.current !== null) {
+            const delta = e.clientX - pointerInteracting.current
+            pointerMovement.current = delta / 100
+          }
+          const country = findNearestCountry(e.clientX, e.clientY)
+          setHovered(country?.nameLt ?? null)
+          if (canvasRef.current) {
+            canvasRef.current.style.cursor =
+              pointerInteracting.current !== null
+                ? 'grabbing'
+                : country
+                  ? 'pointer'
+                  : 'grab'
+          }
+        }}
+        onTouchMove={(e) => {
+          if (pointerInteracting.current !== null && e.touches[0]) {
+            const delta = e.touches[0].clientX - pointerInteracting.current
+            pointerMovement.current = delta / 100
+          }
+        }}
+        style={{
+          width: '100%',
+          height: '100%',
+          cursor: 'grab',
+          contain: 'layout paint size',
+          opacity: 0,
+          transition: 'opacity 0.6s ease',
+        }}
+      />
 
       <div
-        className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-foreground/10 bg-background/80 px-3 py-1 font-mono text-xs backdrop-blur transition-opacity"
-        style={{ opacity: label ? 1 : 0 }}
+        className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-warm-orange/30 bg-background/80 px-3 py-1 font-mono text-xs text-warm-orange backdrop-blur transition-all"
+        style={{
+          opacity: hovered ? 1 : 0,
+          transform: `translate(-50%, ${hovered ? 0 : 8}px)`,
+        }}
       >
-        {label ?? ''}
+        {hovered ?? ''}
       </div>
-
-      <p className="pointer-events-none absolute right-3 top-3 font-mono text-[10px] uppercase tracking-widest text-foreground/40">
-        Tempk · spausk pin
-      </p>
     </div>
   )
 }
