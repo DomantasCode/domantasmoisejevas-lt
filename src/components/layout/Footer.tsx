@@ -1,8 +1,6 @@
-import { SITE } from '@/lib/constants'
+import { SITE, type SocialType } from '@/lib/constants'
 
-type SocialKey = keyof typeof SITE.social
-
-const ICONS: Record<SocialKey, React.ReactNode> = {
+const ICONS: Record<SocialType, React.ReactNode> = {
   github: (
     <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18a10.95 10.95 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.13v3.16c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
   ),
@@ -21,9 +19,7 @@ const ICONS: Record<SocialKey, React.ReactNode> = {
 }
 
 export function Footer() {
-  const links = (Object.entries(SITE.social) as [SocialKey, string][]).filter(
-    ([, url]) => url.length > 0
-  )
+  const links = SITE.social.filter((s) => s.url.length > 0)
 
   return (
     <footer className="border-t border-foreground/10 px-6 py-10">
@@ -32,13 +28,14 @@ export function Footer() {
           © {new Date().getFullYear()} {SITE.name} · {SITE.location}
         </div>
         <div className="flex items-center gap-4">
-          {links.map(([key, url]) => (
+          {links.map((link) => (
             <a
-              key={key}
-              href={url}
+              key={link.label}
+              href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={key}
+              aria-label={link.label}
+              title={link.label}
               className="opacity-60 transition-opacity hover:opacity-100"
             >
               <svg
@@ -47,7 +44,7 @@ export function Footer() {
                 className="h-4 w-4"
                 aria-hidden="true"
               >
-                {ICONS[key]}
+                {ICONS[link.type]}
               </svg>
             </a>
           ))}
