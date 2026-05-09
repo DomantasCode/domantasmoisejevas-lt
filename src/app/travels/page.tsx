@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { countries } from '@/data/countries'
+import { GlobeClient } from '@/components/sections/GlobeClient'
 
 export const metadata: Metadata = {
   title: 'Kelionės',
@@ -12,7 +13,6 @@ export default function TravelsPage() {
 
   return (
     <main className="relative mx-auto max-w-6xl px-6 pb-24 pt-32">
-      {/* Warm sun gradient */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[60vh] opacity-60"
@@ -22,20 +22,30 @@ export default function TravelsPage() {
         }}
       />
 
-      <header className="space-y-3">
-        <p className="font-mono text-xs uppercase tracking-widest text-warm-orange">
-          {visited.length} šalys · pildoma
-        </p>
-        <h1 className="text-5xl font-light tracking-tight md:text-7xl">
-          <span className="font-serif italic">Kur</span> buvau
-        </h1>
-        <p className="max-w-xl text-base leading-relaxed text-foreground/70">
-          Žemė, kurią paliečiau. Vėliau čia atsiras 3D Globe ir kiekvienos
-          šalies atskira istorija su nuotraukomis.
-        </p>
-      </header>
+      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
+        <header className="space-y-3">
+          <p className="font-mono text-xs uppercase tracking-widest text-warm-orange">
+            {visited.length} šalys · pildoma
+          </p>
+          <h1 className="text-5xl font-light tracking-tight md:text-7xl">
+            <span className="font-serif italic">Kur</span> buvau
+          </h1>
+          <p className="max-w-xl text-base leading-relaxed text-foreground/70">
+            Žemė, kurią paliečiau. Tempk gaublį, spausk pin'ą — atversi šalies
+            puslapį.
+          </p>
+        </header>
 
-      <ul className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex justify-center">
+          <GlobeClient />
+        </div>
+      </div>
+
+      <h2 className="mt-20 font-mono text-xs uppercase tracking-widest text-warm-orange">
+        Visos šalys
+      </h2>
+
+      <ul className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {visited.map((c, idx) => (
           <li key={c.code}>
             <Link
@@ -45,7 +55,6 @@ export default function TravelsPage() {
                 transform: `rotate(${idx % 2 === 0 ? '-0.4deg' : '0.4deg'})`,
               }}
             >
-              {/* Stamp corner */}
               <div className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-warm-orange/30 font-serif text-xs italic text-warm-orange">
                 {c.code}
               </div>
@@ -58,9 +67,9 @@ export default function TravelsPage() {
               )}
 
               <div className="mt-12">
-                <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
+                <h3 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
                   {c.nameLt}
-                </h2>
+                </h3>
                 <p className="mt-1 font-mono text-xs uppercase tracking-widest text-foreground/50">
                   {c.name}
                 </p>
