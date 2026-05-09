@@ -2,16 +2,14 @@
 
 import dynamic from 'next/dynamic'
 
-const Globe = dynamic(
-  () => import('@/components/sections/Globe').then((m) => m.Globe),
+const EarthGlobe = dynamic(
+  () => import('@/components/sections/EarthGlobe').then((m) => m.EarthGlobe),
   {
     ssr: false,
     loading: () => (
-      <div className="relative aspect-square w-full max-w-[540px]">
+      <div className="relative aspect-square w-full max-w-[640px]">
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="font-mono text-xs uppercase tracking-widest text-foreground/40">
-            Kraunamas globe…
-          </p>
+          <div className="h-32 w-32 animate-pulse rounded-full bg-foreground/5" />
         </div>
       </div>
     ),
@@ -19,5 +17,5 @@ const Globe = dynamic(
 )
 
 export function GlobeClient() {
-  return <Globe />
+  return <EarthGlobe />
 }

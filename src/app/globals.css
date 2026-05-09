@@ -4,6 +4,8 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-serif), 'Times New Roman', serif;
+  --font-display: var(--font-display), Georgia, serif;
+  --font-grotesque: var(--font-grotesque), system-ui, sans-serif;
 
   --color-background: rgb(var(--background) / <alpha-value>);
   --color-foreground: rgb(var(--foreground) / <alpha-value>);
@@ -132,4 +134,33 @@
 @keyframes grid-drift {
   from { background-position: 0 0; }
   to { background-position: 60px 60px; }
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes shine {
+  0% { background-position: -200% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-shine {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--foreground) / 0.3) 0%,
+      rgb(var(--foreground)) 50%,
+      rgb(var(--foreground) / 0.3) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 6s linear infinite;
+  }
 }
