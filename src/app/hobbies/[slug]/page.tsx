@@ -33,21 +33,30 @@ export default async function HobbyPage({
   if (!h) notFound()
 
   return (
-    <main className="mx-auto max-w-3xl px-6 pb-24 pt-32">
+    <main className="relative mx-auto max-w-3xl px-6 pb-24 pt-32">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[45vh] opacity-50"
+        style={{
+          background:
+            'radial-gradient(ellipse at 30% 0%, rgb(var(--accent) / 0.15), transparent 65%)',
+        }}
+      />
+
       <Link
         href="/hobbies"
-        className="inline-flex items-center gap-2 font-mono text-xs text-foreground/60 hover:text-foreground"
+        className="inline-flex items-center gap-2 font-mono text-xs text-warm-orange hover:opacity-70"
       >
         <ArrowLeft className="h-3 w-3" />
         Visi hobiai
       </Link>
 
       <div className="mt-8 space-y-3">
-        <p className="font-mono text-xs uppercase tracking-widest text-foreground/50">
+        <p className="font-mono text-xs uppercase tracking-widest text-warm-orange">
           {h.category}
           {h.since && ` · ${h.since}`}
         </p>
-        <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
+        <h1 className="font-serif text-5xl font-light tracking-tight md:text-7xl">
           {h.title}
         </h1>
         <p className="text-base text-foreground/70">{h.summary}</p>

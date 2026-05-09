@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
 import { work } from '@/data/work'
 import { projects } from '@/data/projects'
+import { Terminal, Prompt, Cursor } from '@/components/shared/Terminal'
 
 export const metadata: Metadata = {
   title: 'Darbai',
@@ -11,73 +11,76 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 pb-24 pt-32">
-      <div className="space-y-3">
-        <p className="font-mono text-xs uppercase tracking-widest text-foreground/50">
-          Darbai
-        </p>
-        <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
-          Patirtis ir projektai
-        </h1>
-      </div>
+    <main className="mx-auto max-w-4xl px-6 pb-24 pt-32">
+      <Terminal title="~/domantas/work — zsh">
+        <div className="space-y-6 px-5 py-6">
+          <Prompt cwd="~/domantas/work">
+            <span className="text-term-amber">ls</span>{' '}
+            <span className="text-term-magenta">--patirtis</span>
+          </Prompt>
 
-      <section className="mt-16 space-y-2">
-        <h2 className="font-mono text-xs uppercase tracking-widest text-foreground/50">
-          Patirtis
-        </h2>
-        <ul className="divide-y divide-foreground/10">
-          {work.map((item) => (
-            <li key={item.slug}>
-              <Link
-                href={`/work/${item.slug}`}
-                className="group flex flex-col gap-1 py-5 transition-colors hover:bg-foreground/5"
-              >
-                <div className="flex items-baseline justify-between gap-4">
-                  <span className="flex items-center gap-2 text-lg font-medium">
-                    {item.company}
+          <ul className="space-y-1.5">
+            {work.map((item) => (
+              <li key={item.slug}>
+                <Link
+                  href={`/work/${item.slug}`}
+                  className="group grid grid-cols-[auto_1fr_auto] items-baseline gap-x-4 rounded px-2 py-1.5 transition-colors hover:bg-term-cyan/10"
+                >
+                  <span className="text-term-cyan group-hover:text-term-cyan">
+                    drwxr-xr-x
+                  </span>
+                  <span className="flex items-baseline gap-2 text-foreground">
+                    <span className="font-medium">{item.slug}</span>
+                    <span className="hidden text-foreground/50 sm:inline">
+                      {item.role} @ {item.company}
+                    </span>
                     {item.current && (
-                      <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent">
-                        dabar
+                      <span className="inline-flex items-center gap-1 text-term-green">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-term-green" />
+                        active
                       </span>
                     )}
                   </span>
-                  <span className="shrink-0 font-mono text-xs text-foreground/50">
-                    {item.period}
-                  </span>
-                </div>
-                <span className="text-sm text-foreground/70">
-                  {item.role} · {item.location} · {item.type}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+                  <span className="text-term-amber">{item.period}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
 
-      <section className="mt-16 space-y-2">
-        <h2 className="font-mono text-xs uppercase tracking-widest text-foreground/50">
-          Projektai
-        </h2>
-        <ul className="divide-y divide-foreground/10">
-          {projects.map((p) => (
-            <li key={p.slug}>
-              <Link
-                href={`/projects/${p.slug}`}
-                className="group flex items-center justify-between gap-4 py-5 transition-colors hover:bg-foreground/5"
-              >
-                <div className="flex flex-col gap-1">
-                  <span className="text-lg font-medium">{p.title}</span>
-                  <span className="text-sm text-foreground/70">{p.summary}</span>
-                </div>
-                <div className="flex items-center gap-3 font-mono text-xs text-foreground/50">
-                  {p.year}
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+          <Prompt cwd="~/domantas/work">
+            <span className="text-term-amber">ls</span>{' '}
+            <span className="text-term-magenta">--projektai</span>
+          </Prompt>
+
+          <ul className="space-y-1.5">
+            {projects.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/projects/${p.slug}`}
+                  className="group grid grid-cols-[auto_1fr_auto] items-baseline gap-x-4 rounded px-2 py-1.5 transition-colors hover:bg-term-magenta/10"
+                >
+                  <span className="text-term-magenta">-rw-r--r--</span>
+                  <span className="flex items-baseline gap-2 text-foreground">
+                    <span className="font-medium">{p.slug}</span>
+                    <span className="hidden text-foreground/50 sm:inline">
+                      {p.summary}
+                    </span>
+                  </span>
+                  <span className="text-term-amber">{p.year}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <Prompt cwd="~/domantas/work">
+            <Cursor />
+          </Prompt>
+        </div>
+      </Terminal>
+
+      <p className="mt-6 text-center font-mono text-xs text-foreground/40">
+        Spausk bet kurią eilutę, kad pamatytum daugiau.
+      </p>
     </main>
   )
 }

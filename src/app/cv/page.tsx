@@ -45,7 +45,7 @@ export default function CVPage() {
           {TOP_SKILLS.map((s) => (
             <span
               key={s}
-              className="rounded-md border border-foreground/10 bg-foreground/5 px-2 py-1 font-mono text-xs text-foreground/80"
+              className="rounded-md border border-term-cyan/30 bg-term-cyan/5 px-2 py-1 font-mono text-xs text-term-cyan"
             >
               {s}
             </span>
